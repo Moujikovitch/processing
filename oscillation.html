@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ProcessingTest</title>
+	 <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body style="padding:0;margin:0;overflow:hidden">
+	<script src="testprocessing.js"></script>
+	<script type="text/processing" data-processing-target="mycanvas">
+  float osci = 0;
+  float ancient = 0;
+  float nouveau = 0;
+	void setup()
+	 {
+  		size( 500, 500 );
+  		strokeWeight( 1 );
+  		frameRate( 50 );
+  	}
+  	void draw()
+  	{
+  		background(240);
+      fill(100,100,100);
+      rectMode(CENTER);
+      nouveau = log(frameCount*100)-ancient;
+      osci = sin(frameCount/5)*nouveau+250;
+      ancient = nouveau;
+      rect(osci,250,50,50)
+      textSize(12);
+      fill(0,0,0);
+      text(frameCount+" "+nouveau,250,20);
+	}
+	</script>
+<canvas id="mycanvas"></canvas>
+</body>
+</html>

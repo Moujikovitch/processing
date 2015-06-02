@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ProcessingTest</title>
+	 <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body style="padding:0;margin:0;overflow:hidden">
+	<script src="testprocessing.js"></script>
+	<script type="text/processing" data-processing-target="mycanvas">
+	float radius = 50.0;
+	int A;
+	int nombre = round(random(10,40));
+	int[] angle = new int[nombre];
+	int[] virage = new int[nombre];
+	float[][] e = new float[nombre][6];
+	int vit = random(1,10);
+	int rouge, bleu, vert;
+	void setup()
+	{
+  		size( 900, 600 );
+  		strokeWeight( 1 );
+  		frameRate( 50 );
+			vit = random(1,10);
+		//génération thème couleur
+		rouge = random(0,255);
+		bleu = random(0,255-rouge);
+		vert = 255-bleu-rouge;
+		//Paramètres sphères
+  		for (int j=0; j<nombre; j++) {
+   			virage[j]=random(0,10);//random virage
+  			angle[j]=random(0,360);//
+    		e[j][0]=random(0,width); // X
+    		e[j][1]=random(0,height); // Y
+    		e[j][2]=round(random(20,(50/j*6)+35));
+    		e[j][3]=(75-e[j][2]/2)/60*vit; // Speed
+    		e[j][4]=angle[j];//direction assignée
+    		e[j][5]=virage[j];//changement de direction
+    		e[j][6]=random(10,50);//nuance de bleu
+				if (e[j][3]<1) {
+					e[j][3]=1;
+				};
+    	}
+  	}
+  	void draw()
+  	{
+  		background((255-rouge)/10,(255-vert)/10,(255-bleu)/10);
+  		for(int j=0; j<nombre; j++) {
+  			//cercles:
+  			fill(rouge, vert, bleu, 150);
+			noStroke();
+  			ellipse( e[j][0], e[j][1], e[j][2], e[j][2] );
+  			//pulsion taille
+  			if (Math.round(frameCount/10)%2==0){
+				e[j][2]+=0.3;
+			} else {
+				e[j][2]-=0.3;
+			};
+			//Errance
+			rand = Math.random();
+			if (rand > 0.6) {
+				e[j][5]++;
+			}  else if (rand < 0.4) {
+				e[j][5]--;
+			};
+			if (e[j][5] < 3) {
+				e[j][4]-=vit;
+			} else if (e[j][5] > 7) {
+				e[j][4]+=vit;
+			};
+
+			//detection
+			boolean fuite = false; //prioriser la fuite
+			boolean attaque = false; //attaque
+			float predateur = 0; //enregistrer le predateur depuis la boucle
+			float proie = 0; //enregistrer la proie depuis la boucle
+			for (i=0;i<nombre;i++){
+				if (j != i) {
+					float Yd = e[i][1]-e[j][1]; //distance Y
+					float Xd = e[i][0]-e[j][0]; //distance X
+					if (abs(Xd)<70 && abs(Yd)<70) {
+						float Z = sqrt(pow(Yd,2)+pow(Xd,2)); //hypothénuse
+						float ciblerad = atan((Xd/Z)/(Yd/Z)); //angle radiant
+						float cibledeg = ciblerad*180/Math.PI; //angle en degré
+						//positionner angle dans l'hemisphère
+						if (Yd<0){
+							cibledeg+=180;
+						};
+						//définir fuite ou attaque
+						if (e[j][2]>e[i][2]){
+							attaque = true;
+							proie = cibledeg;
+							stroke(255-rouge,255-vert,255-bleu);
+							line(e[i][0],e[i][1],e[j][0],e[j][1]);
+						} else {
+							fuite = true;
+							predateur = cibledeg+180;
+							line(e[i][0],e[i][1],e[j][0],e[j][1]);
+						};
+						fill(255,10,10);
+						noStroke();
+						rectMode(CENTER);
+						rect(10*i,100,10,5);
+						rect(100,10*i,5,10);
+					};
+				};
+			};
+			if (fuite == true) {
+				e[j][4] = predateur;
+			} else if (attaque == true) {
+				e[j][4] = proie;
+			};
+  			//Evitement des bords
+			if (e[j][1]<30 && e[j][4] > 45 && e[j][4] < 315) {
+				e[j][5]=5;
+				if (e[j][4] > 179){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 180){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][1]>height-30 && e[j][4] > 225 || e[j][1]>height-30 && e[j][4] < 135 ) {
+				e[j][5]=5;
+				if (e[j][4] > -1 && e[j][4] < 135){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 361 && e[j][4] > 225){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][0]<30 && e[j][4] < 360 && e[j][4] > 135 || e[j][0]<30 && e[j][4] < 45 ) {
+				e[j][5]=5;
+				if (e[j][4] > 269 || e[j][4] < 45){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 270 && e[j][4] > 45){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][0]>width-30 && e[j][4] > 0 && e[j][4] < 225 || e[j][0]>width-30 && e[j][4] > 315) {
+				e[j][5]=5;
+				if (e[j][4] > 89 && e[j][4] < 315){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 90 || e[j][4] > 315){
+					e[j][4]-=e[j][3];
+				};
+			};
+			//débuggeur coin
+			if (e[j][0]<20 && e[j][1]<20) {
+				e[j][4] = 45;
+			};
+			if (e[j][0]>width-30 && e[j][1]<20) {
+				e[j][4] = 315;
+			};
+			if (e[j][0]<20 && e[j][1]>height-30) {
+				e[j][4] = 135;
+			};
+			if (e[j][0]>width-30 && e[j][1]>height-30) {
+				e[j][4] = 225;
+			};
+			//virage limite
+			if (e[j][5] < 0) {
+				e[j][5] = 0;
+			} else if (e[j][5] > 10) {
+				e[j][5] = 10;
+			};
+			//angle limite
+			if (e[j][4] < 0) {
+				e[j][4] += 360;
+			};
+			if (e[j][4] > 360) {
+				e[j][4] -= 360;
+			};
+			//bord
+			if (e[j][0]<0){
+				e[j][0]=0;
+			};
+			if (e[j][0]>width){
+				e[j][0]=width;
+			};
+			if (e[j][1]<0){
+				e[j][1]=0;
+			};
+			if (e[j][1]>height){
+				e[j][1]=height;
+			};
+			//déplacement final
+			A = e[j][4]*Math.PI/180
+				e[j][0]+=sin(A)*e[j][3];
+				e[j][1]+=cos(A)*e[j][3];
+				//textSize(12);
+				//fill(0,255,0);
+				//text(e[j][4],e[j][0],e[j][1]);
+  		};
+			if (frameCount%400==0){
+				setup();
+			};
+	}
+	</script>
+<canvas id="mycanvas"></canvas>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ProcessingTest</title>
+	 <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<script src="testprocessing.js"></script>
+	<script type="text/processing" data-processing-target="mycanvas">
+	float radius = 50.0;
+	int A;
+	int nombre = 10;
+	int[] angle = new int[nombre];
+	int[] virage = new int[nombre];
+	float[][] e = new float[nombre][6];
+	float vit = 2;
+	void setup()
+	{
+  		size( 500, 500 );
+  		strokeWeight( 2 );
+  		frameRate( 50 );
+  		for (int j=0; j<nombre; j++) {
+   			virage[j]=random(0,10);//random virage
+  			angle[j]=random(0,360);//
+    		e[j][0]=random(0,500); // X
+    		e[j][1]=random(0,500); // Y
+    		e[j][2]=random(20,90);
+    		e[j][3]=(91-e[j][2])/60*vit; // Speed
+    		e[j][4]=angle[j];//direction assignée
+    		e[j][5]=virage[j];//changement de direction
+    		e[j][6]=random(150,250);//nuance de bleu
+    	}
+  	}
+  	void draw()
+  	{
+  		background( 20 );
+  		for(int j=0; j<nombre; j++) {
+  			//cercles:
+  			fill( 10, 70, e[j][6], 150);
+			noStroke();
+  			ellipse( e[j][0], e[j][1], e[j][2], e[j][2] );
+  			//pulsion taille
+  			if (Math.round(frameCount/10)%2==0){
+				e[j][2]+=0.3;
+			} else {
+				e[j][2]-=0.3;
+			};
+			//définition direction
+			rand = Math.random();
+			if (rand > 0.6) {
+				e[j][5]++;
+			}  else if (rand < 0.4) {
+				e[j][5]--;
+			};
+			if (e[j][5] < 3) {
+				e[j][4]--;
+			} else if (e[j][5] > 7) {
+				e[j][4]++;
+			};
+			//Déplacement
+			A = e[j][4]*Math.PI/180
+  			e[j][0]+=sin(A)*e[j][3];
+  			e[j][1]+=cos(A)*e[j][3];
+  			//collision
+			if (e[j][1]<30 && e[j][4] > 45 && e[j][4] < 315) {
+				e[j][5]=5;
+				if (e[j][4] > 179){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 180){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][1]>470 && e[j][4] > 225 || e[j][1]>470 && e[j][4] < 135 ) {
+				e[j][5]=5;
+				if (e[j][4] > -1 && e[j][4] < 135){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 361 && e[j][4] > 225){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][0]<30 && e[j][4] < 360 && e[j][4] > 135 || e[j][0]<30 && e[j][4] < 45 ) {
+				e[j][5]=5;
+				if (e[j][4] > 269 || e[j][4] < 45){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 270 && e[j][4] > 45){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][0]>470 && e[j][4] > 0 && e[j][4] < 225 || e[j][0]>470 && e[j][4] > 315) {
+				e[j][5]=5;
+				if (e[j][4] > 89 && e[j][4] < 315){
+					e[j][4]+=e[j][3];
+				}
+				if (e[j][4] < 90 || e[j][4] > 315){
+					e[j][4]-=e[j][3];
+				};
+			};
+			if (e[j][0]<20 && e[j][1]<20) {
+				e[j][4] = 45;
+			};
+			if (e[j][0]>480 && e[j][1]<20) {
+				e[j][4] = 315;
+			};
+			if (e[j][0]<20 && e[j][1]>480) {
+				e[j][4] = 135;
+			};
+			if (e[j][0]>480 && e[j][1]>480) {
+				e[j][4] = 225;
+			};
+			if (e[j][5] < 0) {
+				e[j][5] = 0;
+			} else if (e[j][5] > 10) {
+				e[j][5] = 10;
+			};
+			//angle
+			if (e[j][4] < 0) {
+				e[j][4] = 360;
+			};
+			if (e[j][4] > 360) {
+				e[j][4] = 0;
+			};
+			//bord
+			if (e[j][0]<0){
+				e[j][0]=0;
+			};
+			if (e[j][0]>500){
+				e[j][0]=500;
+			};
+			if (e[j][1]<0){
+				e[j][1]=0;
+			};
+			if (e[j][1]>500){
+				e[j][1]=500;
+			};
+  		};
+	}
+	</script>
+<canvas id="mycanvas"></canvas>
+</body>
+</html>

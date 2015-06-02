@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ProcessingTest</title>
+	 <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<script src="testprocessing.js"></script>
+	<script type="text/processing" data-processing-target="mycanvas">
+	float radius = 50.0;
+	int X, Y, A;
+	int nX, nY;
+	int delay = 200;
+	int angle = 400;
+	int virage = 5;
+	float[][] e = new float[count][5];
+	float vit = 1;
+	void setup()
+	{
+  		size( 500, 500 );
+  		strokeWeight( 2 );
+  		frameRate( 50 );
+  		X = 250;
+  		Y = 250;
+  		nX = X;
+  		nY = Y;
+	}
+//fonction draw principale
+	void draw(){
+		//augmentation taille
+		if (Math.round(frameCount/10)%2==0){
+			radius+=0.3;
+		} else {
+			radius-=0.3;
+		};
+		//définition de la direction
+		rand = Math.random();
+		if (rand > 0.6) {
+			virage++;
+		}  else if (rand < 0.4) {
+			virage--;
+		};
+		if (virage < 3) {
+			angle--;
+		} else if (virage > 7) {
+			angle++;
+		};
+			A = angle*Math.PI/180
+  		X+=sin(A)*vit;
+  		Y+=cos(A)*vit;
+		//collision
+		if (Y<30 && angle > 45 && angle < 315) {
+			virage=5;
+			if (angle > 179){
+				angle+=vit;
+			}
+			if (angle < 180){
+				angle-=vit;
+			};
+		};
+		if (Y>470 && angle > 225 || Y>470 && angle < 135 ) {
+			virage=5;
+			if (angle > -1 && angle < 135){
+				angle+=vit;
+			}
+			if (angle < 361 && angle > 225){
+				angle-=vit;
+			};
+		};
+		if (X<30 && angle < 360 && angle > 135 || X<30 && angle < 45 ) {
+			virage=5;
+			if (angle > 269 || angle < 45){
+				angle+=vit;
+			}
+			if (angle < 270 && angle > 45){
+				angle-=vit;
+			};
+		};
+		if (X>470 && angle > 0 && angle < 225 || X>470 && angle > 315) {
+			virage=5;
+			if (angle > 89 && angle < 315){
+				angle+=vit;
+			}
+			if (angle < 90 || angle > 315){
+				angle-=vit;
+			};
+		};
+		if (X<20 && Y<20) {
+			angle = 45;
+		};
+		if (X>480 && Y<20) {
+			angle = 315;
+		};
+		if (X<20 && Y>480) {
+			angle = 135;
+		};
+		if (X>480 && Y>480) {
+			angle = 225;
+		};
+
+			//couleur
+  		background( 10 );
+  		fill( 200, 70, 1);
+			stroke(100,5,100);
+			//objet
+  		ellipse( X, Y, radius, radius );
+			//ellipse( X/2, Y/2, radius, radius );
+			//line(X,Y,X/2,Y/2);
+			//ellipse( -X+500, -Y+500, radius, radius );
+			//limite
+			//virage
+			if (virage < 0) {
+				virage = 0;
+			} else if (virage > 10) {
+				virage = 10;
+			};
+			//angle
+			if (angle < 0) {
+				angle = 360;
+			};
+			if (angle > 360) {
+				angle = 0;
+			};
+			//bord
+			if (X<0){
+				X=0;
+			};
+			if (X>500){
+				X=500;
+			};
+			if (Y<0){
+				Y=0;
+			};
+			if (Y>500){
+				Y=500;
+			};
+	}
+	void mouseMoved(){
+  		nX = mouseX;
+  		nY = mouseY;
+	}
+</script>
+<canvas id="mycanvas"></canvas>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ProcessingTest</title>
+	 <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body style="padding:0;margin:0;overflow:hidden">
+	<script src="testprocessing.js"></script>
+	<script type="text/processing" data-processing-target="mycanvas">
+  float Xresult = 0;
+  float Yresult = 0;
+  int angle = 0;
+  int anglerad = 0;
+
+	void setup()
+	{
+  		size( 500, 500 );
+  		strokeWeight( 1 );
+  		frameRate( 1 );
+  	}
+  	void draw()
+  	{
+      //REPERE
+  		background(240);
+  		noFill();
+  		ellipse(250,250,200,200);
+  		line(400,250,100,250);
+      line(250,400,250,100);
+      //POINT CIBLE
+      int Xc = random(0,500);
+      int Yc = random(0,500);
+      line(Xc+20,Yc,Xc-20,Yc);
+      line(Xc,Yc+20,Xc,Yc-20);
+      //DISTANCE
+      int Xd = Xc-250;
+      int Yd = Yc-250;
+      int Hd = sqrt(pow(Xd,2)+pow(Yd,2));
+      //ANGLE EN RADIANT
+      anglerad = atan((Xd/Hd)/(Yd/Hd));
+      //angle en degrés
+      angledeg = anglerad*180/Math.PI;
+      //position hemisphère
+      int anglefin = 0;
+      if (Yd < 0){
+        anglefin = 180+angledeg;
+      } else {
+        anglefin = angledeg;
+      }
+
+      //reconversion en radiant
+      int angleradfin = anglefin*Math.PI/180;
+      //DIRECTION X/Y
+      Xresult = 250+sin(angleradfin)*100;
+      Yresult = 250+cos(angleradfin)*100;
+      //angle fuite
+      int anglefuite = anglefin+180;
+      if (anglefuite > 360) {
+        anglefuite -+360;
+      }
+      int angleradfuite = anglefuite*Math.PI/180;
+      Xfuite = 250+sin(angleradfuite)*100;
+      Yfuite = 250+cos(angleradfuite)*100;
+      line(250,250,Xresult,Yresult);
+      line(250,250,Xfuite,Yfuite);
+      textSize(12);
+      fill(0,0,0);
+      text(angledeg,Xresult+10,Yresult+10);
+      text("xd"+round(Xd)+" "+"yd"+round(Yd),Xc+10,Yc+10);
+	}
+	</script>
+<canvas id="mycanvas"></canvas>
+</body>
+</html>
